@@ -153,11 +153,11 @@ const RANKS = [
     { minM: 500000, name: "유망 스타트업", color: "#10b981" },
     { minM: 10000000, name: "중견 기업", color: "#f59e0b" },
     { minM: 100000000, name: "나라 대표기업", color: "#a855f7" },
-    { minM: 10000000000, name: "글로벌 대기업", color: "#ef4444" },
-    { minM: 100000000000, name: "태양계 대표기업", color: "#44a8ef" },
-    { minM: 1000000000000, name: "은하계 대기업", color: "#181895", bg: "gold" },
-    { minM: 10000000000000, name: "초은하단 대표기업", color: "#00ff00", bg: "aqua" },
-    { minM: 100000000000000, name: "전우주 독점기업", color: "#000000", bg: "red" },
+    { minM: 100000000000, name: "글로벌 대기업", color: "#ef4444" },
+    { minM: 10000000000000, name: "태양계 대표기업", color: "#44a8ef" },
+    { minM: 1000000000000000, name: "은하계 대기업", color: "#181895", bg: "gold" },
+    { minM: 100000000000000000, name: "초은하단 대표기업", color: "#00ff00", bg: "aqua" },
+    { minM: 10000000000000000000, name: "전우주 독점기업", color: "#000000", bg: "red" },
 ];
 
 function getCurrentRank() {
