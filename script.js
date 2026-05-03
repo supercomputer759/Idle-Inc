@@ -60,8 +60,8 @@ const SKILL_DATA = {
     des_s: { x: -50, y: 150, parent: 'des_u', cost: 5, name: "🚀 수석 디자이너", desc: "거장의 감각으로 초기 설계를 시작합니다.", effect: "리브랜딩 시 설계팀이 레벨 2로 시작합니다.", maxLevel: 1 },
     
     // 관리직
-    mgmt_u: { x: 0, y: 120, parent: 'core', cost: 2, name: "🤖 워크플로우 자동화", desc: "반복적인 결제 프로세스를 자동화합니다.", effect: "관리직 AI 기능을 해금합니다.", maxLevel: 1 },
-    mgmt_p: { x: -60, y: 190, parent: 'mgmt_u', cost: 5, name: "💳 서버 용량 증설", desc: "AI가 더 많은 일을 처리하도록 합니다.", effect: "관리직의 한 틱당 최대 구매 횟수가 증가합니다.", maxLevel: 10 },
+    mgmt_u: { x: 0, y: 100, parent: 'core', cost: 2, name: "🤖 워크플로우 자동화", desc: "반복적인 결제 프로세스를 자동화합니다.", effect: "관리직 AI 기능을 해금합니다.", maxLevel: 1 },
+    mgmt_p: { x: -60, y: 240, parent: 'mgmt_u', cost: 5, name: "💳 서버 용량 증설", desc: "AI가 더 많은 일을 처리하도록 합니다.", effect: "관리직의 한 틱당 최대 구매 횟수가 증가합니다.", maxLevel: 10 },
     mgmt_h: { x: 60, y: 190, parent: 'mgmt_u', cost: 10, name: "👑 재귀적 고용", desc: "AI가 자신을 스스로 업그레이드합니다.", effect: "관리직 AI가 관리직 자체를 업그레이드할 수 있게 됩니다.", maxLevel: 1 },
     
     // 홍보팀
@@ -134,6 +134,7 @@ let intervalId = null;
 let eventMultiplier = 1; // [추가] 이벤트 배수 (SNS 대박 등)
 let eventTimer = 0;      // [추가] 이벤트 지속 시간
 let isAiBugged = false;  // AI 반란/버그 상태
+let isResetting = false; // 초기화 중 세이브 방지 플래그
 
 // 기업 등급 정의
 const RANKS = [
@@ -233,7 +234,7 @@ function toggleBgmMute() {
 // 비용 공식
 // =====================
 function cost(level, type) {
-  let baseCost = Math.floor(20 * Math.pow(1.5, level));
+  let baseCost = Math.floor(20 * Math.pow(1.6, level)); // 비용 상승폭 증가 (1.5 -> 1.6)
   
   // 외교 버프 (일본: 비용 -10%)
   let countryDiscount = activeCountries.japan ? 0.9 : 1.0;
@@ -286,9 +287,16 @@ function getIncome() {
   // [외교 보너스]
   let countryIncomeMult = 1;
   if (activeCountries.china) countryIncomeMult *= 1.5;
-  if (activeCountries.usa) countryIncomeMult *= 1.2;
+  if (activeCountries.usa) countryIncomeMult *= 2.0; // 미국 진출 효과 강화 (1.2 -> 2.0)
   // [국가 시너지] 중국 + 미국 = 생산 폭발 (추가 x1.5)
   if (activeCountries.china && activeCountries.usa) countryIncomeMult *= 1.5;
+
+  // [상황별 조건부 배수 추가]
+  let conditionalMult = 1;
+  if (comboCount >= 50) conditionalMult *= 5; // 50콤보 달성 시 수익 5배
+  if (comboCount >= 100) conditionalMult *= 10; // 100콤보 달성 시 수익 10배
+  if (eventTimer > 0) conditionalMult *= 3; // 이벤트 진행 중 기본 수익 3배 보너스
+  if (activeCountries.nuclear) conditionalMult *= 10; // 특수 계약 중 수익 10배
 
   // 개발 특화 보너스
   let devSpecialBonus = 1 + (prestigeUpgrades.dev_m * 0.5);
@@ -299,7 +307,7 @@ function getIncome() {
   }
   
   // [밸런스 패치] 마케팅 효과 너프 (지수 성장에서 선형 성장으로 변경하여 폭주 방지)
-  let baseIncome = (dev * 8) * (1 + marketing * 0.2) * (prestigeUpgrades.mut_evt > 0 ? 0 : 1) * (prestigeUpgrades.mut_spd > 0 ? 0.6 : 1); 
+  let baseIncome = (dev * 8) * Math.pow(marketing, 1.1) * (prestigeUpgrades.mut_evt > 0 ? 0.1 : 1) * (prestigeUpgrades.mut_spd > 0 ? 0.6 : 1); 
 
   // 홍보팀 & 마케팅 스킬 시너지
   let prBoost = 1 + (pr * 0.25);
@@ -315,7 +323,7 @@ function getIncome() {
   // AI 폭주 스킬 (ai3)
   if (isFeverMode && prestigeUpgrades.mgmt_h > 0) feverBase *= 2;
 
-  let income = baseIncome * prBoost * strategyBoost * prestigeBonus * devSpecialBonus * comboBonus * eventMultiplier * feverBase * typeBonus * mktMult * countryIncomeMult;
+  let income = baseIncome * prBoost * strategyBoost * prestigeBonus * devSpecialBonus * comboBonus * eventMultiplier * feverBase * typeBonus * mktMult * countryIncomeMult * conditionalMult;
   
   // [수익 소프트 캡] 수익이 10억(1e9)을 넘어가면 성장 속도를 0.75제곱으로 감쇠
   return income > 1e9 ? 1e9 * Math.pow(income / 1e9, 0.75) : income;
@@ -727,28 +735,127 @@ function spawnGoldenButton() {
 }
 
 // =====================
-// 오프라인 수익
+// 세이브 시스템 (난독화 및 통합 관리)
 // =====================
-function handleOfflineEarnings() {
-    const now = Date.now();
-    const lastSave = localStorage.getItem('idleInc_lastSave') || now;
-    const diff = (now - lastSave) / 1000; // 초 단위
+function getSaveData() {
+    return {
+        v: 1, // 버전
+        m: money,
+        tm: totalMoney,
+        pp: prestigePoints,
+        pu: prestigeUpgrades,
+        d: dev,
+        mk: marketing,
+        ds: design,
+        pr: pr,
+        st: strategy,
+        mg: management,
+        p: priority,
+        t: Date.now()
+    };
+}
 
-    if (diff > 60) { // 1분 이상 부재 시
-        const offlineRate = 0.1; // 기본 10% 적립
+function encode(data) {
+    const raw = JSON.stringify(data);
+    // 1. Base64 인코딩
+    let out = btoa(unescape(encodeURIComponent(raw)));
+    // 2. 뒤집기
+    out = out.split("").reverse().join("");
+    // 3. 노이즈 추가
+    const n = Math.random().toString(36).substring(2, 6);
+    return n + out + n + "!END!";
+}
+
+function decode(str) {
+    try {
+        str = str.replace("!END!", "");
+        str = str.slice(4, -4);
+        str = str.split("").reverse().join("");
+        const raw = decodeURIComponent(escape(atob(str)));
+        return JSON.parse(raw);
+    } catch (e) {
+        console.error("세이브 파싱 실패:", e);
+        return null;
+    }
+}
+
+function saveGame() {
+    if (isResetting) return;
+    const data = getSaveData();
+    localStorage.setItem("idleIncSave", encode(data));
+    addLog("💾 시스템 데이터가 자동 저장되었습니다.");
+}
+
+function loadGame() {
+    const encoded = localStorage.getItem("idleIncSave");
+    if (!encoded) return;
+    const data = decode(encoded);
+    if (!data) return;
+
+    money = data.m;
+    totalMoney = data.tm || data.m;
+    prestigePoints = data.pp || 0;
+    prestigeUpgrades = { ...prestigeUpgrades, ...data.pu }; // 새 스킬 대응을 위한 병합
+    dev = data.d;
+    marketing = data.mk;
+    design = data.ds;
+    pr = data.pr || 0;
+    strategy = data.st || 0;
+    management = data.mg || 0;
+    priority = data.p || "auto";
+
+    // 오프라인 수익 계산
+    const now = Date.now();
+    const diff = (now - data.t) / 1000;
+    if (diff > 60) {
+        const offlineRate = 0.1; 
         const earnings = getIncome() * diff * offlineRate;
-        if (earnings > 0) {
+        if (earnings > 1) {
             money += earnings;
             totalMoney += earnings;
-            document.getElementById("offlineEarnings").innerText = formatNumber(earnings);
-            document.getElementById("offlineModal").style.display = "flex";
+            setTimeout(() => {
+                document.getElementById("offlineEarnings").innerText = formatNumber(earnings);
+                document.getElementById("offlineModal").style.display = "flex";
+            }, 500);
         }
     }
-    
-    // 저장 루프 시작
-    setInterval(() => {
-        localStorage.setItem('idleInc_lastSave', Date.now());
-    }, 5000);
+    updateTickSpeed();
+    renderSkillTree();
+    updateUI();
+}
+
+function exportSave() {
+    const code = encode(getSaveData());
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(code).then(() => {
+            alert("세이브 코드가 클립보드에 복사되었습니다. 안전한 곳에 보관하세요!");
+        }).catch(err => {
+            prompt("복사 실패. 아래 코드를 직접 복사하세요:", code);
+        });
+    } else {
+        prompt("아래 코드를 복사하여 보관하세요:", code);
+    }
+}
+
+function importSave() {
+    const code = prompt("세이브 코드를 입력해주세요:");
+    if (!code) return;
+    const data = decode(code);
+    if (data) {
+        isResetting = true; // 새로고침 시 이전 데이터가 덮어씌워지는 것을 방지
+        localStorage.setItem("idleIncSave", code);
+        location.reload();
+    } else {
+        alert("유효하지 않은 코드입니다.");
+    }
+}
+
+function resetGame() {
+    if (confirm("정말로 모든 데이터를 삭제하시겠습니까? 명성 스킬을 포함한 모든 진행도가 초기화됩니다.")) {
+        isResetting = true;
+        localStorage.removeItem("idleIncSave");
+        location.reload();
+    }
 }
 
 function closeOfflineModal() {
@@ -1032,51 +1139,57 @@ function gameLoop() {
       if (eventTimer > 0) eventTimer--; // 중첩 허용 시에도 타이머는 깎임
       
       if (Math.random() < baseEventProb) {
-      const rand = Math.random();
-      if (rand < 0.15 && pr > 0) { // 바이럴 대폭발 (강화)
-          const mult = 10 * (1 + prestigeUpgrades.evt_m * 0.5);
-          // 중첩 시 배수 곱연산
-          if (canOverlap && eventTimer > 0) eventMultiplier *= mult;
-          else eventMultiplier = mult;
-          
-          eventTimer = 50 * (1 + prestigeUpgrades.evt_d * 0.1); 
-          showNews("🔥 [초특급 바이럴] 전 세계가 우리 제품을 검색하고 있습니다!", true);
-          comboCount += 20;
-          document.body.style.filter = "sepia(0.5) hue-rotate(-30deg) saturate(2)";
-          playFX('viral');
-      } else if (rand < 0.25) { // IPO 성공
-          const ipoBonus = getIncome() * (prestigeUpgrades.mkt_m > 0 ? 2000 : 1000);
-          money += ipoBonus;
-          totalMoney += ipoBonus;
-          showNews("🚀 [IPO 성공] 상장 직후 주가가 폭등하며 거액의 자본이 확보되었습니다!", true);
-          playFX('ipo');
-          comboCount += 50;
-      } else if (rand < 0.45 && management > 0) { // AI 폭주 (신규 긍정 이벤트)
-          eventTimer = 40;
-          showNews("AI 관리 시스템이 자아를 각성하여 초효율 모드에 진입했습니다!", true);
-          document.body.style.filter = "hue-rotate(250deg) brightness(1.1)";
-      } else if (rand < 0.55) { // 서버 화재 (위험)
-          if (canOverlap && eventTimer > 0) eventMultiplier *= 0.1;
-          else eventMultiplier = 0;
+          const rand = Math.random();
+          if (rand < 0.15 && pr > 0) { // 바이럴 대폭발 (강화)
+              const mult = 50 * (1 + prestigeUpgrades.evt_m * 1.0); // 바이럴 효과 극대화 (10x -> 50x)
+              // 중첩 시 배수 곱연산
+              if (canOverlap && eventTimer > 0) eventMultiplier *= mult;
+              else eventMultiplier = mult;
+              
+              eventTimer = 50 * (1 + prestigeUpgrades.evt_d * 0.1); 
+              showNews("🔥 [초특급 바이럴] 전 세계가 우리 제품을 검색하고 있습니다!", true);
+              comboCount += 20;
+              document.body.style.filter = "sepia(0.5) hue-rotate(-30deg) saturate(2)";
+              playFX('viral');
+          } else if (rand < 0.25) { // IPO 성공
+              const ipoBonus = getIncome() * (prestigeUpgrades.mkt_m > 0 ? 10000 : 5000); // IPO 보상 대폭 상향
+              money += ipoBonus;
+              totalMoney += ipoBonus;
+              showNews("🚀 [IPO 성공] 상장 직후 주가가 폭등하며 거액의 자본이 확보되었습니다!", true);
+              playFX('ipo');
+              comboCount += 50;
+          } else if (rand < 0.45 && management > 0) { // AI 폭주 (신규 긍정 이벤트)
+              eventTimer = 40;
+              showNews("AI 관리 시스템이 자아를 각성하여 초효율 모드에 진입했습니다!", true);
+              document.body.style.filter = "hue-rotate(250deg) brightness(1.1)";
+          } else if (rand < 0.55) { // 서버 화재 (위험)
+              if (canOverlap && eventTimer > 0) eventMultiplier *= 0.1;
+              else eventMultiplier = 0;
+              eventTimer = 20;
+              showNews("🔥 [서버실 화재] 모든 서비스가 중단되었습니다! 수익이 발생하지 않습니다!");
+              document.body.style.filter = "contrast(2) grayscale(1)";
+              playFX('fire');
+          } else if (rand < 0.8) { // 투자 유치
+              const bonus = getIncome() * 100;
+              money += bonus;
+              totalMoney += bonus;
+              showNews(`실리콘밸리의 거물 투자자가 우리 기업에 ${formatNumber(bonus)}원을 쏟아붓습니다!`, true);
+              showFloatingText(`+${formatNumber(bonus)}`, '#22c55e', document.getElementById("money"));
+              animateElement("card-dev", "flash");
+              playFX('upgrade');
+          } else if (management > 0) { // AI 버그
+              isAiBugged = true;
+              eventTimer = 40;
+              showNews("중앙 서버실에 화재가 발생하여 AI 관리 기능이 먹통이 되었습니다!");
+              document.body.style.filter = "invert(0.1)";
+              playFX('fail');
+          }
 
-          eventTimer = 20;
-          showNews("🔥 [서버실 화재] 모든 서비스가 중단되었습니다! 수익이 발생하지 않습니다!");
-          document.body.style.filter = "contrast(2) grayscale(1)";
-          playFX('fire');
-      } else if (rand < 0.8) { // 투자 유치
-          const bonus = getIncome() * 100;
-          money += bonus;
-          totalMoney += bonus;
-          showNews(`실리콘밸리의 거물 투자자가 우리 기업에 ${formatNumber(bonus)}원을 쏟아붓습니다!`, true);
-          showFloatingText(`+${formatNumber(bonus)}`, '#22c55e', document.getElementById("money"));
-          animateElement("card-dev", "flash");
-          playFX('upgrade');
-      } else if (management > 0) { // AI 버그
-          isAiBugged = true;
-          eventTimer = 40;
-          showNews("중앙 서버실에 화재가 발생하여 AI 관리 기능이 먹통이 되었습니다!");
-          document.body.style.filter = "invert(0.1)";
-          playFX('fail');
+          // 연쇄 반응 (evt_chain)
+          if (prestigeUpgrades.evt_chain > 0 && Math.random() < 0.2) {
+              setTimeout(() => addLog("🔗 연쇄 반응 발생: 새로운 기회가 즉시 찾아옵니다!"), 500);
+              // 다음 루프에서 이벤트가 다시 터질 확률을 높임
+          }
       }
   }
 
@@ -1099,7 +1212,6 @@ function gameLoop() {
       if (moneyAccumulator >= SOUND_THRESHOLD) {
           playFX('tick');
           moneyAccumulator = 0; // 소리 재생 후 리셋
-      }
       }
   }
   
@@ -1165,8 +1277,8 @@ function updateUI() {
   
   // 이벤트 UI 업데이트
   const eventEl = document.getElementById("eventDisplay");
-  if (eventMultiplier > 1) eventEl.innerText = `🔥 SNS 대박 (x5.0)!`;
-  else if (eventMultiplier < 1) eventEl.innerText = `💀 광고 실패 (x0.2)...`;
+  if (eventMultiplier > 1) eventEl.innerText = `🔥 SNS 대박 (x${eventMultiplier.toFixed(1)})!`;
+  else if (eventMultiplier < 1) eventEl.innerText = `💀 광고 실패 (x${eventMultiplier.toFixed(1)})...`;
   else eventEl.innerText = "";
 
   // 관리직 해금 여부에 따른 UI 노출 제어
@@ -1278,8 +1390,12 @@ function updateUI() {
 applyAudioSettings();
 document.getElementById("toggleFxMuteBtn")?.addEventListener("click", toggleFxMute);
 document.getElementById("toggleBgmMuteBtn")?.addEventListener("click", toggleBgmMute);
-startLoop();
-handleOfflineEarnings();
+
+loadGame(); // 저장된 데이터 불러오기
+startLoop(); // 게임 루프 시작
+setInterval(saveGame, 10000); // 10초마다 자동 저장
+window.addEventListener("beforeunload", saveGame); // 창 닫을 때 저장
+
 renderSkillTree(); // 초기 트리 렌더링
 initTreeDragging(); // 드래그 활성화
 

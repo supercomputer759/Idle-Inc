@@ -9,7 +9,7 @@
 
     <body>
 
-        <div class="game-version">v0.1.1</div>
+        <div class="game-version">v0.1.3</div>
         <div id="newsBanner" class="news-banner"></div>
         
         <!-- 오프라인 수익 알림 -->
@@ -189,6 +189,14 @@
                 <div id="log" class="log-container">
                     <div class="log-entry">시스템 가동 준비 완료...</div>
                 </div>
+
+                <hr>
+                <h4>💾 데이터 관리</h4>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px;">
+                    <button onclick="exportSave()" style="font-size: 11px;">코드 복사</button>
+                    <button onclick="importSave()" style="font-size: 11px;">코드 입력</button>
+                </div>
+                <button onclick="resetGame()" style="width: 100%; font-size: 11px; background: #fee2e2; border-color: #ef4444; color: #b91c1c; margin-top: 5px;">데이터 초기화</button>
             </div>
         </div>
 

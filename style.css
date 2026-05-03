@@ -27,6 +27,7 @@
                 display: block;
                 color: #222;
                 margin-bottom: 5px;
+                transition: all 0.2s;
             }
             .audio-controls {
                 position: fixed;
@@ -109,6 +110,19 @@
             @keyframes flash {
                 0%, 100% { background-color: white; }
                 50% { background-color: #fef08a; }
+            }
+            @keyframes money-glow {
+                0% { text-shadow: 0 0 5px #22c55e; transform: scale(1); }
+                50% { text-shadow: 0 0 20px #22c55e; transform: scale(1.1); }
+                100% { text-shadow: 0 0 5px #22c55e; transform: scale(1); }
+            }
+            .money-huge {
+                animation: money-glow 0.5s infinite;
+                color: #10b981 !important;
+            }
+            .event-active-ui {
+                background: #fff1f2 !important;
+                border-color: #f43f5e !important;
             }
 
             .floating-text {
