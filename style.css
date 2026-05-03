@@ -29,16 +29,52 @@
                 margin-bottom: 5px;
             }
             .audio-controls {
+                position: fixed;
+                top: 30px;
+                right: 30px;
                 display: flex;
-                justify-content: center;
-                gap: 8px;
-                margin-top: 10px;
-                flex-wrap: wrap;
+                gap: 10px;
+                z-index: 10000;
+                margin-top: 0;
             }
+            .game-version {
+                position: fixed;
+                top: 30px;
+                left: 30px;
+                background: white;
+                border: 2px solid #222;
+                border-radius: 8px;
+                padding: 4px 10px;
+                font-weight: bold;
+                box-shadow: 2px 2px 0 #222;
+                z-index: 10000;
+                pointer-events: none;
+            }
+            .audio-toggle-btn,
             .audio-controls button {
-                min-width: 110px;
-                font-size: 12px;
-                padding: 6px 10px;
+                width: 48px;
+                height: 48px;
+                padding: 0;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                background: #fff;
+                border: 2px solid #222;
+                border-radius: 12px;
+                box-shadow: 2px 2px 0 #222;
+                cursor: pointer;
+            }
+            .audio-toggle-btn img,
+            .audio-controls button img {
+                width: 28px;
+                height: 28px;
+                object-fit: contain;
+                pointer-events: none;
+            }
+            .audio-toggle-btn:active,
+            .audio-controls button:active {
+                transform: translate(1px, 1px);
+                box-shadow: 1px 1px 0 #222;
             }
             
             /* 애니메이션 효과 */

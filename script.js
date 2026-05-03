@@ -5,6 +5,7 @@ let money = 100;
 let totalMoney = 100; // 총 누적 수익 추가
 let prestigePoints = 0; // 환생 포인트 추가
 let prestigeUpgrades = {
+    core: 0,
     dev_u: 0, dev_c: 0, dev_m: 0, dev_s: 0, dev_t: 0,
     mkt_u: 0, mkt_c: 0, mkt_m: 0, mkt_s: 0,
     des_u: 0, des_c: 0, des_t: 0, des_s: 0,
@@ -188,12 +189,18 @@ sounds.bgm.onended = playRandomBGM;
 function updateAudioButtons() {
     const fxBtn = document.getElementById("toggleFxMuteBtn");
     const bgmBtn = document.getElementById("toggleBgmMuteBtn");
+    const fxIcon = audioSettings.fxMuted ? "src/image/sound_off.png" : "src/image/sound_on.png";
+    const bgmIcon = audioSettings.bgmMuted ? "src/image/bgm_off.png" : "src/image/bgm_on.png";
 
     if (fxBtn) {
-        fxBtn.innerText = `효과음: ${audioSettings.fxMuted ? '꺼짐' : '켜짐'}`;
+        fxBtn.innerHTML = `<img id="toggleFxMuteIcon" src="${fxIcon}" alt="FX">`;
+        fxBtn.setAttribute("aria-label", audioSettings.fxMuted ? "FX muted" : "FX enabled");
+        fxBtn.title = "FX toggle";
     }
     if (bgmBtn) {
-        bgmBtn.innerText = `BGM: ${audioSettings.bgmMuted ? '꺼짐' : '켜짐'}`;
+        bgmBtn.innerHTML = `<img id="toggleBgmMuteIcon" src="${bgmIcon}" alt="BGM">`;
+        bgmBtn.setAttribute("aria-label", audioSettings.bgmMuted ? "BGM muted" : "BGM enabled");
+        bgmBtn.title = "BGM toggle";
     }
 }
 
@@ -396,7 +403,7 @@ function buyPrestigeUpgrade(id) {
     }
 
     // 종속성 체크
-    if (skill.parent && skill.parent !== 'core' && prestigeUpgrades[skill.parent] === 0) {
+    if (skill.parent && prestigeUpgrades[skill.parent] === 0) {
         alert("선행 스킬이 필요합니다!");
         return;
     }
@@ -417,7 +424,7 @@ function buyPrestigeUpgrade(id) {
 
 // [방사형 트리 렌더링 엔진]
 function isSkillOwned(id) {
-    return id === 'core' || prestigeUpgrades[id] > 0;
+    return (prestigeUpgrades[id] || 0) > 0;
 }
 
 function isSkillLocked(id) {
@@ -467,12 +474,12 @@ function renderSkillTree() {
         node.dataset.skillId = id;
         
         let levelTag = "";
-        if (isOwned && !isCore) {
+        if (isOwned) {
             levelTag = `<div class="level-tag">Lv.${prestigeUpgrades[id]}</div>`;
         }
         node.innerHTML = `<span>${skill.name}</span>${levelTag}`;
         
-        if (!isOwned && !isLocked && !isCore) {
+        if (!isOwned && !isLocked) {
             const price = document.createElement("div");
             price.className = "price-tag";
             price.innerText = `${getPrestigeSkillCost(id)}P`;
@@ -574,7 +581,6 @@ function initTreeDragging() {
 
 // 노드 선택 로직
 function selectNode(id) {
-    if (id === 'core') return;
     selectedNodeId = id;
     renderSkillTree(); // 선택 상태 표시를 위해 재렌더링
 

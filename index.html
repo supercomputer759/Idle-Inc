@@ -9,6 +9,7 @@
 
     <body>
 
+        <div class="game-version">v0.1.1</div>
         <div id="newsBanner" class="news-banner"></div>
         
         <!-- 오프라인 수익 알림 -->
@@ -18,6 +19,11 @@
                 <p>회사가 자리를 비운 사이 <span id="offlineEarnings" style="color:#22c55e; font-weight:bold;">0</span>원을 벌었습니다!</p>
                 <button onclick="closeOfflineModal()">수령하기</button>
             </div>
+        </div>
+
+        <div class="audio-controls">
+            <button id="toggleFxMuteBtn" type="button">효과음: 켜짐</button>
+            <button id="toggleBgmMuteBtn" type="button">BGM: 켜짐</button>
         </div>
 
         <div class="header">
@@ -33,10 +39,6 @@
                     </div>
                 </div>
                 <div id="eventDisplay" style="font-size: 0.9em; color: #ef4444; font-weight: bold; height: 1.2em; letter-spacing: 1px;"></div>
-                <div class="audio-controls">
-                    <button id="toggleFxMuteBtn" type="button">효과음: 켜짐</button>
-                    <button id="toggleBgmMuteBtn" type="button">BGM: 켜짐</button>
-                </div>
                 <div style="font-size: 0.9em; color: #aaa;">수익: <span id="totalIncome">0</span>원 / 틱</div>
             </div>
         </div>
