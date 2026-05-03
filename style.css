@@ -1,0 +1,464 @@
+/* 스타일 통일 패치 */
+            body {
+                background: #f3f6ff;
+                font-family: 'Pretendard', Arial, sans-serif;
+                color: #1f1f1f;
+                margin: 0;
+                padding: 20px;
+                overflow: hidden;
+                height: 100vh;
+                box-sizing: border-box;
+                display: flex;
+                flex-direction: column; /* 세로 배치로 충돌 방지 */
+            }
+            .header {
+                background: white;
+                border: 3px solid #222;
+                border-radius: 12px;
+                padding: 20px;
+                box-shadow: 4px 4px 0px #222;
+                margin-bottom: 25px;
+                text-align: center;
+                flex-shrink: 0; /* 헤더 크기 고정 */
+            }
+            #money {
+                font-size: 32px;
+                font-weight: bold;
+                display: block;
+                color: #222;
+                margin-bottom: 5px;
+            }
+            .audio-controls {
+                display: flex;
+                justify-content: center;
+                gap: 8px;
+                margin-top: 10px;
+                flex-wrap: wrap;
+            }
+            .audio-controls button {
+                min-width: 110px;
+                font-size: 12px;
+                padding: 6px 10px;
+            }
+            
+            /* 애니메이션 효과 */
+            @keyframes pop {
+                0% { transform: scale(1); }
+                50% { transform: scale(1.1); }
+                100% { transform: scale(1); }
+            }
+            @keyframes bounce {
+                0%, 100% { transform: translateY(0); }
+                50% { transform: translateY(-5px); }
+            }
+            @keyframes pulse-red {
+                0% { border-color: #ef4444; box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+                70% { box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); }
+                100% { border-color: #222; }
+            }
+            @keyframes pulse-purple {
+                0% { border-color: #a855f7; box-shadow: 0 0 0 0 rgba(168, 85, 247, 0.6); }
+                70% { box-shadow: 0 0 0 15px rgba(168, 85, 247, 0); }
+                100% { border-color: #222; }
+            }
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                20%, 60% { transform: translateX(-8px); border-color: #ef4444; }
+                40%, 80% { transform: translateX(8px); border-color: #ef4444; }
+            }
+            @keyframes floatUp {
+                0% { transform: translateY(0); opacity: 1; }
+                100% { transform: translateY(-50px); opacity: 0; }
+            }
+            @keyframes flash {
+                0%, 100% { background-color: white; }
+                50% { background-color: #fef08a; }
+            }
+
+            .floating-text {
+                position: absolute;
+                pointer-events: none;
+                font-weight: bold;
+                animation: floatUp 0.8s ease-out forwards;
+                z-index: 2000;
+            }
+
+            .pop { animation: pop 0.15s ease; }
+            .bounce { animation: bounce 0.1s ease; }
+            .pulse-red { animation: pulse-red 0.5s ease-out; }
+            /* 외교 뱃지 스타일 */
+            .country-badge {
+                padding: 4px 10px;
+                border-radius: 20px;
+                font-size: 11px;
+                font-weight: bold;
+                color: white;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+                animation: pulse-soft 2s infinite;
+            }
+            @keyframes pulse-soft {
+                0%, 100% { transform: scale(1); }
+                50% { transform: scale(1.05); }
+            }
+
+            /* 모달 스타일 */
+            .modal {
+                position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+                display: flex; align-items: center; justify-content: center; z-index: 10001;
+            }
+            .modal-content {
+                background: white; padding: 30px; border-radius: 20px;
+                text-align: center; box-shadow: 0 0 30px rgba(0,0,0,0.5);
+                border: 4px solid #222;
+            }
+
+            .pulse-purple { animation: pulse-purple 0.5s ease-out; }
+            .shake { animation: shake 0.4s ease-in-out; }
+            .flash { animation: flash 0.5s ease; }
+            
+            /* 피버 모드 애니메이션 */
+            @keyframes fever-shake {
+                0% { transform: translate(1px, 1px) rotate(0deg); }
+                10% { transform: translate(-1px, -2px) rotate(-1deg); }
+                20% { transform: translate(-3px, 0px) rotate(1deg); }
+                30% { transform: translate(3px, 2px) rotate(0deg); }
+                40% { transform: translate(1px, -1px) rotate(1deg); }
+                50% { transform: translate(-1px, 2px) rotate(-1deg); }
+                60% { transform: translate(-3px, 1px) rotate(0deg); }
+                70% { transform: translate(3px, 1px) rotate(-1deg); }
+                80% { transform: translate(-1px, -1px) rotate(1deg); }
+                90% { transform: translate(1px, 2px) rotate(0deg); }
+                100% { transform: translate(1px, -2px) rotate(-1deg); }
+            }
+            .fever-active {
+                animation: fever-shake 0.5s infinite;
+                background: linear-gradient(to bottom, #fff3e8, #fef2f2) !important;
+            }
+
+            /* 골든 클릭 버튼 */
+            .golden-btn {
+                position: absolute;
+                width: 60px;
+                height: 60px;
+                background: radial-gradient(circle, #fcd34d 0%, #f59e0b 100%);
+                border: 4px solid #fff;
+                border-radius: 50%;
+                box-shadow: 0 0 20px rgba(245, 158, 11, 0.6);
+                cursor: pointer;
+                pointer-events: auto;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 24px;
+                animation: pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+                z-index: 5001;
+            }
+
+            .desc {
+                font-size: 11px;
+                color: #666;
+                margin: 4px 0 8px 0;
+            }
+
+            .skill-tree-layout {
+                display: flex;
+                flex-direction: column; /* 가로(row)에서 세로(column)로 변경 */
+                gap: 10px;
+                width: 100%;
+            }
+            .tree-viewport {
+                width: 100%;
+                height: 300px; /* 트리 뷰포트 높이 고정 */
+                position: relative;
+                background: #fefce8;
+                border: 2px inset #f59e0b;
+                border-radius: 8px;
+                overflow: hidden;
+                cursor: grab;
+                user-select: none;
+                touch-action: none;
+            }
+            .tree-viewport:active { cursor: grabbing; }
+            .skill-details {
+                width: 100%;
+                box-sizing: border-box;
+                background: white;
+                border: 2px solid #ddd;
+                border-radius: 8px;
+                padding: 15px;
+                display: flex;
+                flex-direction: column;
+                box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
+                word-break: keep-all;
+                white-space: normal;
+                overflow-y: auto;
+                min-height: 150px;
+            }
+            #detailsContent {
+                display: flex;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+                width: 100%;
+            }
+            .detail-item {
+                display: flex;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 4px;
+                width: 100%;
+            }
+            .detail-item label {
+                display: block;
+                font-size: 11px;
+                font-weight: 700;
+                color: #92400e;
+                letter-spacing: 0.02em;
+            }
+            #detailName,
+            #detailDesc,
+            #detailEffect,
+            #detailCost {
+                display: block;
+                width: 100%;
+                margin: 0;
+            }
+            #detailDesc {
+                font-size: 12px;
+                line-height: 1.5;
+            }
+            #detailEffect {
+                background: #f0fdf4;
+                padding: 8px;
+                border-radius: 6px;
+                font-size: 11px;
+                border-left: 4px solid #22c55e;
+                box-sizing: border-box;
+            }
+            #detailBuyBtn {
+                width: 100%;
+                margin-top: 4px;
+                align-self: stretch;
+            }
+            .tree-container {
+                position: absolute;
+                top: 50%; left: 50%;
+                transform-origin: center;
+                width: 0; height: 0;
+            }
+            .tree-node {
+                position: absolute;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                width: 60px;
+                background: white;
+                border: 2px solid #94a3b8;
+                border-radius: 50%;
+                aspect-ratio: 1/1;
+                font-size: 8px;
+                text-align: center;
+                transform: translate(-50%, -50%);
+                z-index: 2;
+                transition: all 0.2s;
+                cursor: help;
+                box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+            }
+            .tree-node.owned { border-color: #f59e0b; background: #fffbeb; border-width: 3px; z-index: 3; }
+            .tree-node.selected { box-shadow: 0 0 15px rgba(59, 130, 246, 0.8); border-color: #3b82f6; transform: translate(-50%, -50%) scale(1.1); }
+            .tree-node.locked { opacity: 0.45; filter: grayscale(1); }
+            .tree-node.core { width: 70px; border-color: #222; background: #eee; font-weight: bold; font-size: 10px; }
+            
+            /* 변형 노드 (Tier 3) 특수 스타일 */
+            .tree-node.transform {
+                border-style: double;
+                border-width: 5px;
+                background: #fdf2f8;
+                border-color: #ec4899;
+            }
+            .tree-node.transform.owned {
+                background: #fbcfe8;
+                border-color: #db2777;
+            }
+
+            .tree-node span { display: block; margin-bottom: 2px; font-weight: bold; }
+            .tree-node .price-tag { font-size: 9px; color: #666; font-weight: bold; }
+            .tree-node button {
+                padding: 2px 6px;
+                font-size: 9px;
+                border-width: 2px;
+            }
+
+            /* 긴급 뉴스 배너 */
+            .news-banner {
+                position: fixed;
+                top: -60px;
+                left: 0;
+                right: 0;
+                background: #ef4444;
+                color: white;
+                padding: 15px;
+                text-align: center;
+                font-weight: bold;
+                font-size: 1.1em;
+                z-index: 9999;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+                transition: top 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                border-bottom: 4px solid #991b1b;
+            }
+            .news-banner.active { top: 0; }
+            .news-banner.positive { background: #10b981; border-color: #064e3b; }
+
+            /* 레이아웃 구조 수정 */
+            .game-container {
+                display: flex;
+                gap: 30px;
+                flex: 1;
+                min-height: 0; /* 스크롤 작동을 위한 설정 */
+                justify-content: center;
+                max-width: 1400px;
+                margin: 0 auto;
+                width: 100%;
+            }
+            .upgrade-section {
+                flex: 1;
+                max-width: 450px;
+                overflow-y: auto;
+                padding: 10px 20px 50px 20px; /* 좌우 패딩 추가로 잘림 방지 */
+                padding-bottom: 50px;
+                scrollbar-width: thin; /* 스크롤바 슬림화 */
+            }
+
+            button {
+                background: white;
+                border: 3px solid #222;
+                border-radius: 10px;
+                padding: 8px 16px;
+                font-weight: bold;
+                cursor: pointer;
+                box-shadow: 3px 3px 0px #222;
+                transition: all 0.1s ease;
+                margin: 4px 2px;
+                font-size: 14px;
+            }
+            button:hover {
+                transform: translate(-2px, -2px);
+                box-shadow: 5px 5px 0px #222;
+                background: #fafafa;
+            }
+            button:active {
+                transform: translate(2px, 2px);
+                box-shadow: 1px 1px 0px #222;
+            }
+            .card {
+                background: white;
+                border: 3px solid #222;
+                border-radius: 14px;
+                padding: 16px;
+                margin: 15px 0;
+                box-shadow: 5px 5px 0px #222;
+            }
+            /* 팀별 테두리 색상 */
+            .card-dev { border-color: #3b82f6; }
+            .card-marketing { border-color: #ec4899; }
+            .card-design { border-color: #10b981; }
+            .card-mgmt { border-color: #a855f7; }
+            .card-pr { border-color: #f59e0b; }
+            .card-strategy { border-color: #6366f1; }
+            .status-panel {
+                flex: 1.2;
+                background: white;
+                color: #222;
+                border: 3px solid #222;
+                box-shadow: 6px 6px 0px #222;
+                border-radius: 14px;
+                padding: 20px;
+                height: 100%; /* 부모 높이 전체 차지 */
+                overflow-y: auto; /* 오른쪽도 독립 스크롤 */
+                scrollbar-width: thin;
+            }
+            .btn-rebirth {
+                background: #ef4444 !important;
+                color: white !important;
+                border-color: #991b1b !important;
+                padding: 12px !important;
+                font-size: 16px !important;
+                animation: pulse-red 2s infinite;
+            }
+            .btn-rebirth:hover {
+                background: #dc2626 !important;
+                animation: none;
+            }
+            /* 로그 시스템 스타일 */
+            .log-container {
+                margin-top: 20px;
+                background: #f8fafc;
+                border: 2px dashed #ccc;
+                border-radius: 10px;
+                padding: 10px;
+                height: 120px;
+                overflow-y: auto; /* 로그 내역 스크롤 허용 */
+                font-size: 12px;
+                color: #666;
+                display: flex;
+                flex-direction: column-reverse; /* 최신 로그가 위로 */
+            }
+            .log-entry {
+                padding: 2px 0;
+                border-bottom: 1px solid #eee;
+            }
+            hr { border: none; border-top: 2px solid #eee; margin: 15px 0; }
+
+            /* 전략 지도 레이아웃 보정 */
+            .strategy-map-panel {
+                overflow: hidden;
+            }
+            .skill-tree-layout {
+                flex-direction: column;
+                min-height: 420px;
+            }
+            .tree-viewport {
+                flex: 1;
+                min-height: 250px;
+            }
+            .skill-details {
+                flex: 0 0 auto;
+                min-width: 0;
+                min-height: 140px;
+            }
+            .game-container {
+                align-items: stretch;
+            }
+            .status-panel {
+                flex: 1.5 1 200px;
+                min-width: 200px;
+                overflow-x: hidden;
+            }
+            @media (max-width: 980px) {
+                body {
+                    overflow-y: auto;
+                    height: auto;
+                    min-height: 100vh;
+                }
+                .game-container {
+                    flex-direction: column;
+                    align-items: stretch;
+                }
+                .upgrade-section,
+                .status-panel {
+                    max-width: none;
+                    min-width: 0;
+                    width: 100%;
+                }
+                .status-panel {
+                    flex-basis: auto;
+                    height: auto;
+                }
+                .skill-tree-layout {
+                    min-height: 460px;
+                }
+                .tree-viewport {
+                    min-height: 280px;
+                }
+            }
