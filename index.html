@@ -9,7 +9,7 @@
 
     <body>
 
-        <div class="game-version">v0.1.3</div>
+        <div class="game-version">v0.1.5</div>
         <div id="newsBanner" class="news-banner"></div>
         
         <!-- 오프라인 수익 알림 -->
@@ -119,10 +119,15 @@
                 <div id="diplomacyPanel" style="display: none; margin-top: 10px; padding: 10px; background: #f0f9ff; border: 2px solid #3b82f6; border-radius: 10px;">
                     <h4 style="margin: 0 0 8px 0; color: #1e40af;">🌍 글로벌 외교 전략</h4>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px;">
-                        <button onclick="activateCountry('japan')" style="font-size: 11px; padding: 5px;">🇯🇵 일본 제휴<br><span id="japanCost" style="font-size: 9px; color: #666; font-weight: normal;">0원</span></button>
-                        <button onclick="activateCountry('china')" style="font-size: 11px; padding: 5px;">🇨🇳 중국 수출<br><span id="chinaCost" style="font-size: 9px; color: #666; font-weight: normal;">0원</span></button>
-                        <button onclick="activateCountry('usa')" style="font-size: 11px; padding: 5px;">🇺🇸 미국 진출<br><span id="usaCost" style="font-size: 9px; color: #666; font-weight: normal;">0원</span></button>
-                        <button onclick="activateCountry('nuclear')" style="font-size: 11px; padding: 5px; background: #fee2e2;">☢️ 비밀 계약<br><span id="nuclearCost" style="font-size: 9px; color: #666; font-weight: normal;">0원</span></button>
+                        <button onclick="activateCountry('japan')" style="font-size: 11px; padding: 5px;">🇯🇵 일본 제휴<br><span style="font-size: 8px; color: #3b82f6;">비용 10% 감소</span><br><span id="japanCost" style="font-size: 9px; color: #666; font-weight: normal;">0원</span></button>
+                        <button onclick="activateCountry('korea')" style="font-size: 11px; padding: 5px;">🇰🇷 남한 협력<br><span style="font-size: 8px; color: #3b82f6;">수익 80% 증가</span><br><span id="koreaCost" style="font-size: 9px; color: #666; font-weight: normal;">0원</span></button>
+                        <button onclick="activateCountry('china')" style="font-size: 11px; padding: 5px;">🇨🇳 중국 수출<br><span style="font-size: 8px; color: #3b82f6;">수익 50%↑ 비용 20%↑</span><br><span id="chinaCost" style="font-size: 9px; color: #666; font-weight: normal;">0원</span></button>
+                        <button onclick="activateCountry('usa')" style="font-size: 11px; padding: 5px;">🇺🇸 미국 진출<br><span style="font-size: 8px; color: #3b82f6;">수익 100% 증가</span><br><span id="usaCost" style="font-size: 9px; color: #666; font-weight: normal;">0원</span></button>
+                        <button onclick="activateCountry('germany')" style="font-size: 11px; padding: 5px;">🇩🇪 독일 기술<br><span style="font-size: 8px; color: #3b82f6;">속도 20% 가속</span><br><span id="germanyCost" style="font-size: 9px; color: #666; font-weight: normal;">0원</span></button>
+                        <button onclick="activateCountry('vietnam')" style="font-size: 11px; padding: 5px;">🇻🇳 베트남 공장<br><span style="font-size: 8px; color: #3b82f6;">비용 20% 감소</span><br><span id="vietnamCost" style="font-size: 9px; color: #666; font-weight: normal;">0원</span></button>
+                        <button onclick="activateCountry('uk')" style="font-size: 11px; padding: 5px;">🇬🇧 영국 금융<br><span style="font-size: 8px; color: #3b82f6;">명성 획득 50%↑</span><br><span id="ukCost" style="font-size: 9px; color: #666; font-weight: normal;">0원</span></button>
+                        <button onclick="activateCountry('north')" style="font-size: 11px; padding: 5px;">🇰🇵 북한 협약<br><span style="font-size: 8px; color: #ef4444; font-weight: bold;">수익 10배 폭증</span><br><span id="northCost" style="font-size: 9px; color: #666; font-weight: normal;">0원</span></button>
+                        <button onclick="activateCountry('nuclear')" style="font-size: 11px; padding: 5px; background: #fee2e2;">☢️ 비밀 계약<br><span style="font-size: 8px; color: #666;">자산 10배 or -70%</span><br><span id="nuclearCost" style="font-size: 9px; color: #666; font-weight: normal;">0원</span></button>
                     </div>
                     <div id="activeBuffs" style="margin-top: 8px; font-size: 11px; color: #1e40af; font-weight: bold;"></div>
                 </div>

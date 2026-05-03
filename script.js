@@ -14,6 +14,7 @@ let prestigeUpgrades = {
     dip_u: 0, dip_g: 0, dip_m: 0, dip_o: 0,
     evt_u: 0, evt_c: 0, evt_d: 0, evt_m: 0, evt_chain: 0,
     cmb_u: 0, cmb_k: 0, cmb_b: 0, cmb_ai: 0, cmb_j: 0, cmb_ex: 0,
+    fever_u: 0, dip_ex: 0, auto_m: 0, mut_quant: 0,
     auto_u: 0, auto_spd: 0, auto_evt: 0, auto_inf: 0,
     mut_u: 0, mut_spd: 0, mut_evt: 0, mut_idle: 0,
     companyType: 'startup'
@@ -74,6 +75,7 @@ const SKILL_DATA = {
     dip_g: { x: 250, y: 230, parent: 'dip_u', cost: 15, name: "🌐 다국적 가치", desc: "회사의 글로벌 가치를 인정받습니다.", effect: "리브랜딩 시 획득하는 명성 포인트가 증가합니다.", maxLevel: 10 },
     dip_m: { x: 350, y: 230, parent: 'dip_u', cost: 15, name: "✈️ 무역 협정", desc: "여러 국가와 동시에 협력합니다.", effect: "여러 이벤트 효과가 동시에 중첩되어 발생할 수 있습니다.", maxLevel: 1 },
     dip_o: { x: 450, y: 230, parent: 'dip_u', cost: 20, name: "🏢 해외 R&D 센터", desc: "전 세계의 인재를 모아 개발합니다.", effect: "해외 국가 버프가 있을 때 개발팀 수익이 추가로 증가합니다.", maxLevel: 5 },
+    dip_ex: { x: 550, y: 300, parent: 'dip_o', cost: 30, name: "🤝 문화 교류", desc: "현지 문화를 깊게 이해하여 협력 관계를 공고히 합니다.", effect: "외교 제휴 지속 시간이 증가합니다.", maxLevel: 10 },
     
     //////// 플레이 스타일 확장 트리 \\\\\\\\
     // 이벤트
@@ -90,25 +92,33 @@ const SKILL_DATA = {
     cmb_ai: { x: -270, y: -60, parent: 'cmb_u', cost: 8, name: "🤖 자동 유지", desc: "AI가 흐름을 이어갑니다.", effect: "관리직이 콤보를 더 효과적으로 유지합니다.", maxLevel: 5 },
     cmb_j: { x: -350, y: -120, parent: 'cmb_u', cost: 15, name: "🎰 잭팟 강화", desc: "결정적인 순간을 더 크게 만듭니다.", effect: "콤보 잭팟 보상이 크게 증가합니다.", maxLevel: 5 },
     cmb_ex: { x: -350, y: -180, parent: 'cmb_u', cost: 20, name: "💥 콤보 폭발", desc: "끝이 곧 시작입니다.", effect: "콤보 종료 시 누적 보너스 일부를 즉시 지급합니다.", maxLevel: 1, type: 'transform' },
+    fever_u: { x: -450, y: -250, parent: 'cmb_ex', cost: 30, name: "⚡ 오버드라이브 진화", desc: "한계를 넘어선 시스템이 더 강력한 출력을 냅니다.", effect: "피버 모드(오버드라이브) 수익 배율이 증가합니다.", maxLevel: 5, type: 'transform' },
     
     // 자동화
     auto_u: { x: 0, y: 300, parent: 'mgmt_u', cost: 5, name: "🧠 자율 운영", desc: "AI가 독립적으로 판단합니다.", effect: "자동화 효율이 크게 증가합니다.", maxLevel: 1 },
     auto_spd: { x: -80, y: 370, parent: 'auto_u', cost: 10, name: "⚡ 고속 처리", desc: "AI 반응 속도가 향상됩니다.", effect: "AI 업그레이드 속도가 증가합니다.", maxLevel: 10 },
     auto_evt: { x: 0, y: 370, parent: 'auto_u', cost: 15, name: "🎲 이벤트 대응", desc: "AI가 기회를 놓치지 않습니다.", effect: "AI가 이벤트에도 반응합니다.", maxLevel: 1 },
     auto_inf: { x: 80, y: 370, parent: 'auto_u', cost: 25, name: "♾️ 무한 확장", desc: "AI는 멈추지 않습니다.", effect: "AI가 모든 업그레이드를 자동으로 관리합니다.", maxLevel: 1, type: 'transform' },
+    auto_m: { x: 180, y: 440, parent: 'auto_inf', cost: 50, name: "🧬 AI 싱귤래리티", desc: "AI가 인간의 지능을 초월하여 비용을 최적화합니다.", effect: "관리직 고용 및 업그레이드 비용이 감소합니다.", maxLevel: 1, type: 'transform' },
     
     // 변형
     mut_u: { x: 0, y: -520, parent: 'evt_chain', cost: 20, name: "⚠️ 시스템 재설계", desc: "기본 규칙을 다시 정의합니다.", effect: "게임 시스템 변형이 가능합니다.", maxLevel: 1 },
     mut_spd: { x: -80, y: -590, parent: 'mut_u', cost: 25, name: "⏩ 시간 압축", desc: "시간 흐름이 빨라집니다.", effect: "틱 속도가 2배가 되지만 기본 수익이 감소합니다.", maxLevel: 1, type: 'transform' },
     mut_evt: { x: 0, y: -590, parent: 'mut_u', cost: 25, name: "🎯 이벤트 집중", desc: "모든 것을 기회에 걸어봅니다.", effect: "기본 수익 제거, 이벤트 수익 극대화", maxLevel: 1, type: 'transform' },
-    mut_idle: { x: 80, y: -590, parent: 'mut_u', cost: 25, name: "😴 완전 방치", desc: "모든 것을 자동에 맡깁니다.", effect: "클릭 효율 감소, AI 효율 극대화", maxLevel: 1, type: 'transform' }
+    mut_idle: { x: 80, y: -590, parent: 'mut_u', cost: 25, name: "😴 완전 방치", desc: "모든 것을 자동에 맡깁니다.", effect: "클릭 효율 감소, AI 효율 극대화", maxLevel: 1, type: 'transform' },
+    mut_quant: { x: 0, y: -700, parent: 'mut_u', cost: 100, name: "🌌 양자 연산", desc: "확률의 파동을 제어하여 수익을 창출합니다.", effect: "기본 수익이 압도적으로 증가하지만, 속도가 소폭 감소합니다.", maxLevel: 1, type: 'transform' }
 };
 
 const COUNTRIES = {
-    japan: { name: "일본", cost: 1, duration: 30, color: "#ff4d4d" },
-    china: { name: "중국", cost: 300, duration: 30, color: "#ffd700" },
-    usa: { name: "미국", cost: 500, duration: 30, color: "#3b82f6" },
-    nuclear: { name: "특수", cost: 1000000000, duration: 1, color: "#444" }
+    japan: { name: "일본", cost: 100, duration: 30, color: "#ff4d4d", desc: "업그레이드 비용 10% 감소" },
+    korea: { name: "남한", cost: 2000, duration: 45, color: "#3b82f6", desc: "IT 협력: 수익 80% 증가" },
+    china: { name: "중국", cost: 10000, duration: 30, color: "#ffd700", desc: "수익 50%↑ / 비용 20%↑" },
+    usa: { name: "미국", cost: 50000, duration: 30, color: "#3b82f6", desc: "수익 100% 증가" },
+    germany: { name: "독일", cost: 250000, duration: 60, color: "#000000", desc: "공정 최적화: 속도 20% 가속" },
+    vietnam: { name: "베트남", cost: 1000000, duration: 120, color: "#da251d", desc: "아웃소싱: 비용 20% 감소" },
+    uk: { name: "영국", cost: 5000000, duration: 180, color: "#00247d", desc: "금융 허브: 명성 획득 50%↑" },
+    north: { name: "북한", cost: 500000000, duration: 60, color: "#7d0000", desc: "군수물자: 수익 10배 폭증" },
+    nuclear: { name: "특수", cost: 1000000000, duration: 1, color: "#444", desc: "자산 10배 혹은 70% 증발" }
 };
 
 let activeCountries = {}; // { id: timer }
@@ -155,14 +165,15 @@ function getCurrentRank() {
 // FX & 사운드 세팅 (파일이 없을 경우 대비하여 예외처리)
 // =====================
 const sounds = {
-    upgrade: new Audio("src/audio/upgrade.mp3"),
-    tick: new Audio("src/audio/pop.mp3"),
-    fail: new Audio("src/audio/fail.mp3"),
+    upgrade: new Audio("src/audio/upgrade.mp3"), // 업그레이드!!
+    tick: new Audio("src/audio/pop.mp3"), // 돈들어온다🤑🤑
+    fail: new Audio("src/audio/fail.mp3"), // 오류, 돈부족
     viral: new Audio("src/audio/ipo.mp3"), // SNS 대박
     ipo: new Audio("src/audio/ipo.mp3"),     // IPO/돈 관련
     fire: new Audio("src/audio/error.mp3"),   // 화재/위험
     fever: new Audio("src/audio/jackpot.mp3"), // 오버드라이브 진입
     jackpot: new Audio("src/audio/cash.mp3"), // 골든 버튼
+    unlock: new Audio("src/audio/unlock.mp3"), // 업그레이드 해금
     bgm: new Audio()
 };
 
@@ -240,6 +251,8 @@ function cost(level, type) {
   let countryDiscount = activeCountries.japan ? 0.9 : 1.0;
   // 중국 버프 (생산 증가 대신 비용 +20%)
   let countryPenalty = activeCountries.china ? 1.2 : 1.0;
+  // 베트남 버프 (비용 -20%)
+  let vietnamDiscount = activeCountries.vietnam ? 0.8 : 1.0;
 
   // 부서별 할인 명성 스킬 적용
   const discountKey = { dev: 'dev_c', marketing: 'mkt_c', design: 'des_c', pr: 'pr_c' }[type];
@@ -248,11 +261,15 @@ function cost(level, type) {
   let strategyDiscount = 1 - (strategy * 0.03); // 레벨당 3% 할인 (전략팀 버프)
   
   // 관리직 비용은 별도 스케일링
-  if (type === 'management') baseCost = Math.floor(100 * Math.pow(10, level));
+  if (type === 'management') {
+      baseCost = Math.floor(100 * Math.pow(10, level));
+      // AI 싱귤래리티 할인 (50%)
+      if (prestigeUpgrades.auto_m > 0) baseCost *= 0.5;
+  }
 
   // 최소 할인 한도 10% 설정
   let finalDiscount = Math.max(0.1, prestigeDiscount * strategyDiscount);
-  return Math.floor(baseCost * finalDiscount * countryDiscount * countryPenalty);
+  return Math.floor(baseCost * finalDiscount * countryDiscount * countryPenalty * vietnamDiscount);
 }
 
 // =====================
@@ -286,10 +303,16 @@ function getIncome() {
 
   // [외교 보너스]
   let countryIncomeMult = 1;
+  if (activeCountries.korea) countryIncomeMult *= 1.8; // 한국: IT 보너스
   if (activeCountries.china) countryIncomeMult *= 1.5;
   if (activeCountries.usa) countryIncomeMult *= 2.0; // 미국 진출 효과 강화 (1.2 -> 2.0)
+  if (activeCountries.north) countryIncomeMult *= 10.0; // 북한: 군수 물자 보너스 (압도적 수익 x10)
   // [국가 시너지] 중국 + 미국 = 생산 폭발 (추가 x1.5)
   if (activeCountries.china && activeCountries.usa) countryIncomeMult *= 1.5;
+
+  // 해외 R&D 센터 (dip_o) 시너지: 활성화된 국가당 수익 증가
+  const activeNonNuclear = Object.keys(activeCountries).filter(id => id !== 'nuclear').length;
+  let dipOBonus = 1 + (activeNonNuclear * (prestigeUpgrades.dip_o || 0) * 0.5);
 
   // [상황별 조건부 배수 추가]
   let conditionalMult = 1;
@@ -309,6 +332,9 @@ function getIncome() {
   // [밸런스 패치] 마케팅 효과 너프 (지수 성장에서 선형 성장으로 변경하여 폭주 방지)
   let baseIncome = (dev * 8) * Math.pow(marketing, 1.1) * (prestigeUpgrades.mut_evt > 0 ? 0.1 : 1) * (prestigeUpgrades.mut_spd > 0 ? 0.6 : 1); 
 
+  // 양자 연산 보너스 (x10)
+  if (prestigeUpgrades.mut_quant > 0) baseIncome *= 10;
+
   // 홍보팀 & 마케팅 스킬 시너지
   let prBoost = 1 + (pr * 0.25);
   const mktMult = Math.pow(2, prestigeUpgrades.mkt_m); // 마케팅 Tier 2 효과 (중첩 시 2배씩 증가)
@@ -319,11 +345,11 @@ function getIncome() {
   let comboBonus = 1 + (comboCount * (0.02 + prestigeUpgrades.cmb_b * 0.01));
   
   // 피버 모드 시 추가 5배 보너스
-  let feverBase = isFeverMode ? 5 : 1;
+  let feverBase = isFeverMode ? (5 + (prestigeUpgrades.fever_u || 0) * 2) : 1;
   // AI 폭주 스킬 (ai3)
   if (isFeverMode && prestigeUpgrades.mgmt_h > 0) feverBase *= 2;
 
-  let income = baseIncome * prBoost * strategyBoost * prestigeBonus * devSpecialBonus * comboBonus * eventMultiplier * feverBase * typeBonus * mktMult * countryIncomeMult * conditionalMult;
+  let income = baseIncome * prBoost * strategyBoost * prestigeBonus * devSpecialBonus * comboBonus * eventMultiplier * feverBase * typeBonus * mktMult * countryIncomeMult * conditionalMult * dipOBonus;
   
   // [수익 소프트 캡] 수익이 10억(1e9)을 넘어가면 성장 속도를 0.75제곱으로 감쇠
   return income > 1e9 ? 1e9 * Math.pow(income / 1e9, 0.75) : income;
@@ -400,7 +426,7 @@ function buyPrestigeUpgrade(id) {
     const skill = SKILL_DATA[id];
     if (!skill) return;
     if (isSkillLocked(id)) {
-        alert("??");
+        alert("스킬이 잠겨있습니다!");
         return;
     }
 
@@ -422,6 +448,7 @@ function buyPrestigeUpgrade(id) {
         prestigePoints -= actualCost;
         prestigeUpgrades[id]++;
         
+        playFX('unlock');
         addLog(`🌳 스킬 강화: [${skill.name}] Lv.${prestigeUpgrades[id]} 달성!`);
         renderSkillTree(); // 트리 재렌더링
         updateUI();
@@ -619,6 +646,10 @@ function selectNode(id) {
             case 'dip_g': return `명성 획득 +${lv * 20}%`;
             case 'mut_spd': return `속도 2배 / 수익 -40%`;
             case 'mut_evt': return `기본수익 0 / 이벤트 극대화`;
+            case 'fever_u': return `피버 배율 +${lv * 2}x`;
+            case 'dip_ex': return `지속 시간 +${lv * 10}%`;
+            case 'auto_m': return `관리직 비용 50% 할인`;
+            case 'mut_quant': return `수익 x10 / 속도 -20%`;
             default: return lv > 0 ? "활성화됨" : "비활성화";
         }
     };
@@ -686,9 +717,12 @@ function activateCountry(id) {
             }
             playFX('fire');
         } else {
-            activeCountries[id] = country.duration;
-            showNews(`🌍 ${country.name}와(과) 전략적 제휴를 체결했습니다! (30초)`, true);
+            // 문화 교류(dip_ex)에 따른 지속 시간 증가
+            const durationBonus = 1 + (prestigeUpgrades.dip_ex || 0) * 0.1;
+            activeCountries[id] = Math.floor(country.duration * durationBonus);
+            showNews(`🌍 ${country.name} 제휴: ${country.desc} (${activeCountries[id]}초)`, true);
             playFX('ipo');
+            if (id === 'germany') updateTickSpeed();
         }
         updateUI();
     } else {
@@ -700,8 +734,10 @@ function updateDiplomacyTimers() {
     for (let id in activeCountries) {
         activeCountries[id]--;
         if (activeCountries[id] <= 0) {
+            const expiredId = id;
             delete activeCountries[id];
-            addLog(`🌍 ${COUNTRIES[id].name}와의 제휴 기간이 만료되었습니다.`);
+            addLog(`🌍 ${COUNTRIES[expiredId].name}와의 제휴 기간이 만료되었습니다.`);
+            if (expiredId === 'germany') updateTickSpeed();
         }
     }
 }
@@ -921,6 +957,7 @@ function upgradeManagement(el) { tryUpgrade('management', false, el); }
 function getPotentialPrestige() {
     let gain = Math.floor(Math.sqrt(totalMoney / 10000000));
     if (prestigeUpgrades.dip_g > 0) gain = Math.floor(gain * (1 + prestigeUpgrades.dip_g * 0.2));
+    if (activeCountries.uk) gain = Math.floor(gain * 1.5); // 영국: 명성 획득 50% 보너스
     return gain;
 }
 
@@ -976,7 +1013,10 @@ function rebirth() {
 // =====================
 function updateTickSpeed() {
   let designEffect = 0.2 + (prestigeUpgrades.des_t * 0.1);
-  tickSpeed = (1000 / (1 + design * designEffect)) * (prestigeUpgrades.mut_spd > 0 ? 0.5 : 1);
+  let speedMult = activeCountries.germany ? 0.8 : 1.0; // 독일: 20% 가속
+  let quantPenalty = prestigeUpgrades.mut_quant > 0 ? 1.2 : 1.0; // 양자 연산: 20% 감속
+
+  tickSpeed = (1000 / (1 + design * designEffect)) * (prestigeUpgrades.mut_spd > 0 ? 0.5 : 1) * speedMult * quantPenalty;
   startLoop(); // 속도 변경 시 루프 재시작
 }
 
