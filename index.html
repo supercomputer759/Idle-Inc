@@ -9,7 +9,7 @@
 
     <body>
 
-        <div class="game-version">v0.1.5</div>
+        <div class="game-version">v0.1.6</div>
         <div id="newsBanner" class="news-banner"></div>
         
         <!-- 오프라인 수익 알림 -->
@@ -27,7 +27,12 @@
         </div>
 
         <div class="header">
-            <h2>🏢 <span id="corporateRank">구멍가게</span> : <span id="companyTypeDisplay">유휴 주식회사</span></h2>
+            <div style="display: flex; justify-content: center; align-items: center; gap: 15px; margin-bottom: 10px;">
+                <h2 style="margin: 0;">🏢 <span id="corporateRank">구멍가게</span> : <span id="companyTypeDisplay">유휴 주식회사</span></h2>
+                <!-- 국가별 활성 상태 아이콘 컨테이너 -->
+                <div id="countryIndicators" style="display: flex; gap: 8px;"></div>
+            </div>
+
             <div class="money-display">
                 <span id="money">0원</span>
                 <div id="comboContainer" style="color: #f59e0b; font-weight: bold; font-size: 1.2em; position: relative; display: flex; flex-direction: column; align-items: center;">

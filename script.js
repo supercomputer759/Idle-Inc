@@ -148,17 +148,20 @@ let isResetting = false; // 초기화 중 세이브 방지 플래그
 
 // 기업 등급 정의
 const RANKS = [
-    { minP: 0, name: "구멍가게", color: "#666" },
-    { minP: 5, name: "동네 상점", color: "#3b82f6" },
-    { minP: 20, name: "유망 스타트업", color: "#10b981" },
-    { minP: 100, name: "중견 기업", color: "#f59e0b" },
-    { minP: 500, name: "유니콘 기업", color: "#a855f7" },
-    { minP: 2000, name: "글로벌 대기업", color: "#ef4444" },
-    { minP: 10000, name: "은하계 독점기업", color: "#000", bg: "gold" }
+    { minM: 0, name: "구멍가게", color: "#666" },
+    { minM: 10000, name: "동네 상점", color: "#3b82f6" },
+    { minM: 500000, name: "유망 스타트업", color: "#10b981" },
+    { minM: 10000000, name: "중견 기업", color: "#f59e0b" },
+    { minM: 100000000, name: "나라 대표기업", color: "#a855f7" },
+    { minM: 10000000000, name: "글로벌 대기업", color: "#ef4444" },
+    { minM: 100000000000, name: "태양계 대표기업", color: "#44a8ef" },
+    { minM: 1000000000000, name: "은하계 대기업", color: "#181895", bg: "gold" },
+    { minM: 10000000000000, name: "초은하단 대표기업", color: "#00ff00", bg: "aqua" },
+    { minM: 100000000000000, name: "전우주 독점기업", color: "#000000", bg: "red" },
 ];
 
 function getCurrentRank() {
-    return [...RANKS].reverse().find(r => prestigePoints >= r.minP) || RANKS[0];
+    return [...RANKS].reverse().find(r => totalMoney >= r.minM) || RANKS[0];
 }
 
 // =====================
@@ -1338,7 +1341,7 @@ function updateUI() {
       diplomacyPanel.style.display = isDipUnlocked ? "block" : "none";
       
       if (isDipUnlocked) {
-          // 외교 비용 실시간 업데이트 및 버튼 상태 제어
+          // 외교 비용 및 버튼 상태 업데이트
           for (let id in COUNTRIES) {
               const costEl = document.getElementById(`${id}Cost`);
               if (costEl) {
@@ -1348,7 +1351,28 @@ function updateUI() {
               }
           }
 
-          // 활성화된 버프 표시
+          // 상단 활성 국가 아이콘 업데이트
+          const indicatorContainer = document.getElementById("countryIndicators");
+          if (indicatorContainer) {
+              const countryEmojis = { japan: "🇯🇵", korea: "🇰🇷", china: "🇨🇳", usa: "🇺🇸", germany: "🇩🇪", vietnam: "🇻🇳", uk: "🇬🇧", north: "🇰🇵", nuclear: "☢️" };
+              let html = "";
+              for (let id in activeCountries) {
+                  const country = COUNTRIES[id];
+                  const timeLeft = activeCountries[id];
+                  const totalTime = country.duration * (1 + (prestigeUpgrades.dip_ex || 0) * 0.1);
+                  const percent = (timeLeft / totalTime) * 100;
+                  
+                  html += `
+                      <div class="country-badge" style="background: ${country.color}; position: relative; overflow: hidden; display: flex; align-items: center; gap: 4px; border: 1px solid rgba(0,0,0,0.1);">
+                          <span>${countryEmojis[id]}</span>
+                          <span style="font-size: 10px;">${timeLeft}s</span>
+                          <div style="position: absolute; bottom: 0; left: 0; height: 3px; background: rgba(255,255,255,0.6); width: ${percent}%;"></div>
+                      </div>
+                  `;
+              }
+              indicatorContainer.innerHTML = html;
+          }
+
           const buffEl = document.getElementById("activeBuffs");
           const activeNames = Object.keys(activeCountries).map(id => COUNTRIES[id].name);
           buffEl.innerText = activeNames.length > 0 ? "활성: " + activeNames.join(", ") : "진행 중인 제휴 없음";
