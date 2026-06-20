@@ -19,6 +19,12 @@ function softcap(value, cap, power = 0.5) {
     return cap * Math.pow(value / cap, power);
 }
 
+function extendFeverTime(ms, source = "manual") {
+    if (!isFeverMode || feverCooldownMs > 0) return;
+    const multiplier = source === "manual" ? 1 : 0.25;
+    feverTimeLeftMs = Math.min(7000, feverTimeLeftMs + ms * multiplier);
+}
+
 function recordPlayerAction() {
     lastPlayerActionAt = Date.now();
     extendFeverTime(400, "manual");

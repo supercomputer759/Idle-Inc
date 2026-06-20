@@ -64,17 +64,22 @@ function spawnGoldenButton() {
     btn.style.top = `${y}px`;
 
     btn.onclick = () => {
-        const isAutoClick = btn.dataset.autoClick === "true";
-        const reward = getIncome() * 300 * (1 + prestigeUpgrades.cmb_j * 0.5); // 300틱 분량 수익
-        money += reward;
-        totalMoney += reward;
-        comboCount += isAutoClick ? 2 : 5;
-        if (!isAutoClick) runStats.goldenClicks += 1;
-        extendFeverTime(isAutoClick ? 120 : 400, isAutoClick ? "auto" : "manual");
-        showFloatingText(`JACKPOT! +${formatNumber(reward)}`, '#f59e0b', btn);
-        playFX('jackpot');
-        evaluateContracts();
-        btn.remove();
+        if (btn.dataset.claimed === "true") return;
+        btn.dataset.claimed = "true";
+        try {
+            const isAutoClick = btn.dataset.autoClick === "true";
+            const reward = getIncome() * 300 * (1 + prestigeUpgrades.cmb_j * 0.5);
+            money += reward;
+            totalMoney += reward;
+            comboCount += isAutoClick ? 2 : 5;
+            if (!isAutoClick) runStats.goldenClicks += 1;
+            extendFeverTime(isAutoClick ? 120 : 400, isAutoClick ? "auto" : "manual");
+            showFloatingText(`JACKPOT! +${formatNumber(reward)}`, '#f59e0b', btn);
+            playFX('jackpot');
+            evaluateContracts();
+        } finally {
+            btn.remove();
+        }
     };
 
     layer.appendChild(btn);
