@@ -1,4 +1,4 @@
 git status
 git add .
-git commit -m "ì—…ë°ì´íŠ¸"
+git commit -m "¾÷µ¥ÀÌÆ®"
 git push
