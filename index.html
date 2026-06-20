@@ -210,7 +210,44 @@
             </div>
         </div>
 
+        <div class="contracts-dock">
+            <div class="contracts-panel">
+                <div class="contracts-header">
+                    <div>
+                        <div class="section-head"><h4>투자 계약</h4><button id="toggleContractsBtn" type="button" onclick="toggleContractsPanel()">계약 접기</button></div>
+                        <p id="contractsMeta">새 목표가 계속 회사를 움직이게 만듭니다.</p>
+                    </div>
+                    <button id="rerollContractsBtn" type="button" onclick="rerollContracts()">재편성</button>
+                </div>
+                <div id="contractsBody" class="collapsible-body">
+                    <div id="contractsList" class="contracts-list">
+                    <div class="contract-empty">계약을 불러오는 중...</div>
+                    </div>
+                </div>
+            </div>
+            <div class="contracts-panel achievements-panel">
+                <div class="contracts-header">
+                    <div>
+                        <div class="section-head"><h4>업적</h4><button id="toggleAchievementsBtn" type="button" onclick="toggleAchievementsPanel()">업적 접기</button></div>
+                        <p id="achievementsMeta">창업자의 장기 업적이 영구 보너스로 쌓입니다.</p>
+                    </div>
+                </div>
+                <div id="achievementsBody" class="collapsible-body">
+                    <div id="achievementsList" class="achievements-list">
+                    <div class="contract-empty">업적을 불러오는 중...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div id="clickEventLayer" style="position: fixed; inset: 0; pointer-events: none; z-index: 5000;"></div>
-        <script src="script.js"></script>
+        <script src="src/js/00-state-data.js"></script>
+        <script src="src/js/01-audio-ui-helpers.js"></script>
+        <script src="src/js/02-format-contracts-fever.js"></script>
+        <script src="src/js/03-economy-upgrades.js"></script>
+        <script src="src/js/04-diplomacy-save.js"></script>
+        <script src="src/js/05-prestige-speed-ai.js"></script>
+        <script src="src/js/06-loop-ui-init.js"></script>
     </body>
 </html>
+

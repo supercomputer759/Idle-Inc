@@ -340,6 +340,22 @@
                 border-width: 2px;
             }
 
+            /* 밸런스 패치: 더 넓은 전략 지도 */
+            .tree-viewport {
+                height: 460px;
+            }
+            .tree-node {
+                width: 72px;
+                font-size: 9px;
+            }
+            .tree-node.core {
+                width: 86px;
+                font-size: 11px;
+            }
+            .tree-node .price-tag {
+                font-size: 10px;
+            }
+
             /* 긴급 뉴스 배너 */
             .news-banner {
                 position: fixed;
@@ -485,6 +501,143 @@
                 min-width: 200px;
                 overflow-x: hidden;
             }
+            .contracts-dock {
+                position: fixed;
+                right: 18px;
+                top: 84px;
+                width: min(260px, calc(100vw - 36px));
+                z-index: 9000;
+                max-height: calc(100vh - 110px);
+                overflow-y: auto;
+                padding-bottom: 4px;
+            }
+            .contracts-panel {
+                background: linear-gradient(180deg, #fffdf7 0%, #fff7ed 100%);
+                border: 3px solid #222;
+                border-radius: 18px;
+                box-shadow: 6px 6px 0 #222;
+                padding: 12px;
+                margin-bottom: 12px;
+                overflow: hidden;
+            }
+            .section-head {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 8px;
+            }
+            .contracts-header {
+                display: flex;
+                gap: 12px;
+                align-items: flex-start;
+                justify-content: space-between;
+                margin-bottom: 8px;
+            }
+            .contracts-header h4 {
+                margin: 0 0 4px 0;
+                font-size: 16px;
+            }
+            .contracts-header p {
+                margin: 0;
+                font-size: 11px;
+                color: #7c5a10;
+                line-height: 1.4;
+            }
+            #rerollContractsBtn {
+                border-radius: 10px;
+                padding: 6px 10px;
+                font-size: 11px;
+                white-space: nowrap;
+            }
+            #rerollContractsBtn:disabled {
+                opacity: 0.45;
+                cursor: not-allowed;
+                box-shadow: none;
+                transform: none;
+            }
+            .contracts-list {
+                display: grid;
+                gap: 10px;
+            }
+            .collapsible-body {
+                max-height: 1200px;
+                opacity: 1;
+                overflow: hidden;
+                transition: max-height 0.35s ease, opacity 0.25s ease, transform 0.25s ease;
+                transform: translateY(0);
+            }
+            .collapsible-body.collapsed {
+                max-height: 0;
+                opacity: 0;
+                transform: translateY(-4px);
+                pointer-events: none;
+            }
+            .contract-card {
+                background: rgba(255, 255, 255, 0.92);
+                border: 2px solid #f59e0b;
+                border-radius: 14px;
+                padding: 10px;
+            }
+            .contract-badge {
+                display: inline-block;
+                padding: 2px 8px;
+                border-radius: 999px;
+                background: #fff7ed;
+                border: 1px solid #f59e0b;
+                font-size: 10px;
+                color: #b45309;
+            }
+            .contract-card.done {
+                border-color: #10b981;
+                box-shadow: inset 0 0 0 1px rgba(16, 185, 129, 0.15);
+            }
+            .contract-topline {
+                display: flex;
+                justify-content: space-between;
+                gap: 8px;
+                font-size: 11px;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: 0.08em;
+                color: #b45309;
+                margin-bottom: 6px;
+            }
+            .contract-card.done .contract-topline {
+                color: #047857;
+            }
+            .contract-title {
+                font-size: 13px;
+                font-weight: 700;
+                margin-bottom: 4px;
+                color: #1f2937;
+            }
+            .contract-desc,
+            .contract-reward {
+                font-size: 11px;
+                color: #4b5563;
+                line-height: 1.45;
+            }
+            .contract-progress {
+                height: 8px;
+                margin: 10px 0 6px;
+                background: #fde7b0;
+                border-radius: 999px;
+                overflow: hidden;
+            }
+            .contract-progress-bar {
+                height: 100%;
+                background: linear-gradient(90deg, #f59e0b, #f97316);
+                border-radius: inherit;
+                transition: width 0.2s ease;
+            }
+            .contract-card.done .contract-progress-bar {
+                background: linear-gradient(90deg, #10b981, #34d399);
+            }
+            .contract-progress-text,
+            .contract-empty {
+                font-size: 11px;
+                color: #6b7280;
+            }
             @media (max-width: 980px) {
                 body {
                     overflow-y: auto;
@@ -504,6 +657,13 @@
                 .status-panel {
                     flex-basis: auto;
                     height: auto;
+                }
+                .contracts-dock {
+                    position: static;
+                    width: 100%;
+                    margin-top: 16px;
+                    max-height: none;
+                    overflow: visible;
                 }
                 .skill-tree-layout {
                     min-height: 460px;
